@@ -18,7 +18,7 @@ public class Film {
     private Long id;
     @NotBlank
     private String name;
-    @Size(max=200)
+    @Size(max = 200)
     private String description;
     @NotNull
     @DateAfterSpecial(minDate = "1895-12-28")
