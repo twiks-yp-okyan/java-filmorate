@@ -23,6 +23,6 @@ public class Film {
     @NotNull
     @DateAfterSpecial(minDate = "1895-12-28")
     private LocalDate releaseDate;
-    @PositiveDuration
-    private Duration duration;
+    @Positive
+    private Integer duration;
 }

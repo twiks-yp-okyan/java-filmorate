@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.utils.IdGenerator;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class FilmController {
         }
         if (films.containsKey(film.getId())) {
             Film oldFilm = films.get(film.getId());
+            oldFilm.setName(film.getName());
             oldFilm.setDescription(film.getDescription());
             oldFilm.setReleaseDate(film.getReleaseDate());
             oldFilm.setDuration(film.getDuration());
