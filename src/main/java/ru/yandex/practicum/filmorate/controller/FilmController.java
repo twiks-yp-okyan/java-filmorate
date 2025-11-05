@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
+@Slf4j
 public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
@@ -26,6 +28,7 @@ public class FilmController {
     public Film addFilm(@Valid @RequestBody Film film) {
         film.setId(IdGenerator.getNextId(films));
         films.put(film.getId(), film);
+        log.info("Film {} with id = {} was added", film.getName(), film.getId());
         return film;
     }
 
@@ -39,6 +42,7 @@ public class FilmController {
             oldFilm.setDescription(film.getDescription());
             oldFilm.setReleaseDate(film.getReleaseDate());
             oldFilm.setDuration(film.getDuration());
+            log.info("Film with id = {} was updated", film.getId());
             return oldFilm;
         }
         throw new NotFoundException("Фильм с id = " + film.getId() + " не найден");
