@@ -28,7 +28,7 @@ public class UserController {
     public User create(@Valid @RequestBody User user) {
         user.setId(IdGenerator.getNextId(users));
         // имя для отображения может быть пустым — в таком случае будет использован логин
-        if (user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         users.put(user.getId(), user);
