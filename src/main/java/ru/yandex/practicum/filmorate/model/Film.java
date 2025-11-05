@@ -4,9 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.validator.annotation.DateAfterSpecial;
-import ru.yandex.practicum.filmorate.validator.annotation.PositiveDuration;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 /**
