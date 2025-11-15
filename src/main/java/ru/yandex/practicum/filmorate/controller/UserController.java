@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -28,7 +27,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable long id) { return userStorage.getUserById(id); }
+    public User getUserById(@PathVariable long id) {
+        return userStorage.getUserById(id);
+    }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {

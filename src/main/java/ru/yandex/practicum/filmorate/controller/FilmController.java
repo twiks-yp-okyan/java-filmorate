@@ -22,10 +22,14 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    public Collection<Film> getFilms() { return filmStorage.getFilms(); }
+    public Collection<Film> getFilms() {
+        return filmStorage.getFilms();
+    }
 
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable long id) { return filmStorage.getFilmById(id); }
+    public Film getFilmById(@PathVariable long id) {
+        return filmStorage.getFilmById(id);
+    }
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
