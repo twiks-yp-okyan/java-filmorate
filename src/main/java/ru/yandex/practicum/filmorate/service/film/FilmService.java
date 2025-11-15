@@ -36,17 +36,16 @@ public class FilmService {
         return Map.of("result", String.format("Пользователь с id %d убрал лайк с фильма с id %d", userId, filmId));
     }
 
-    public Map<String, List<Film>> getTopFilms(Integer count) {
+    public List<Film> getTopFilms(Integer count) {
         if (count == null) {
             count = topFilmCountConstantWithFuckingCheckstyleTermsNaming;
         }
         if (count <= 0) {
             throw new IncorrectParameterException("count", count.toString());
         }
-        List<Film> sortedFilms = filmStorage.getFilms().stream()
+        return filmStorage.getFilms().stream()
                 .sorted(filmLikesComparator.reversed())
                 .limit(count)
                 .toList();
-        return Map.of("result", sortedFilms);
     }
 }

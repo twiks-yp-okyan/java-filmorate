@@ -30,13 +30,13 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorInfo handleFilmLike(final FilmLikeException e) {
         return new ErrorInfo(String.format("Для фильма с id %d не удается поставить/убрать лайк от пользователя с id %d", e.getFilmId(), e.getUserId()));
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.OK) // WTF?
     public ErrorInfo handleFriendship(final FriendshipException e) {
         return new ErrorInfo(String.format("Пользователи с id %d и %d и так друзья/не друзья/один пользователь.", e.getUser1Id(), e.getUser2Id()));
     }
