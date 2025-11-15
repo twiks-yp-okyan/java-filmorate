@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmLikeException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 
@@ -13,10 +15,14 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
     private final int topFilmCountConstantWithFuckingCheckstyleTermsNaming = 10;
     private final Comparator<Film> filmLikesComparator = Comparator.comparing((Film film) -> film.getUserIdsLikes().size());
 
     public Map<String, String> addLike(Long filmId, Long userId) {
+        if (!userStorage.getUsers().contains(userStorage.getUserById(userId))) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден");
+        }
         Set<Long> filmLikes = new HashSet<>(filmStorage.getFilmById(filmId).getUserIdsLikes());
         if (filmLikes.contains(userId)) {
             throw new FilmLikeException(filmId, userId);
@@ -27,6 +33,9 @@ public class FilmService {
     }
 
     public Map<String, String> removeLike(Long filmId, Long userId) {
+        if (!userStorage.getUsers().contains(userStorage.getUserById(userId))) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден");
+        }
         Set<Long> filmLikes = new HashSet<>(filmStorage.getFilmById(filmId).getUserIdsLikes());
         if (!filmLikes.contains(userId)) {
             throw new FilmLikeException(filmId, userId);
