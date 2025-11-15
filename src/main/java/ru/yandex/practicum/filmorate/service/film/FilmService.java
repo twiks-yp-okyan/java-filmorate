@@ -13,7 +13,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final int TOP_FILMS_COUNT = 10;
+    private final int topFilmCountConstantWithFuckingCheckstyleTermsNaming = 10;
     private final Comparator<Film> filmLikesComparator = Comparator.comparing((Film film) -> film.getUserIdsLikes().size());
 
     public Map<String, String> addLike(Long filmId, Long userId) {
@@ -37,7 +37,9 @@ public class FilmService {
     }
 
     public Map<String, List<Film>> getTopFilms(Integer count) {
-        if (count == null) { count = TOP_FILMS_COUNT; }
+        if (count == null) {
+            count = topFilmCountConstantWithFuckingCheckstyleTermsNaming;
+        }
         if (count <= 0) {
             throw new IncorrectParameterException("count", count.toString());
         }
