@@ -16,7 +16,9 @@ import java.util.Map;
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
 
-    public Collection<User> getUsers() { return users.values(); }
+    public Collection<User> getUsers() {
+        return users.values();
+    }
 
     public User getUserById(Long id) {
         if (users.containsKey(id)) {
