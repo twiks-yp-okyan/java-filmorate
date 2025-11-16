@@ -19,6 +19,22 @@ public class FilmService {
     private final int topFilmCountConstantWithFuckingCheckstyleTermsNaming = 10;
     private final Comparator<Film> filmLikesComparator = Comparator.comparing((Film film) -> film.getUserIdsLikes().size());
 
+    public Collection<Film> getFilms() {
+        return filmStorage.getFilms();
+    }
+
+    public Film getFilmById(long id) {
+        return filmStorage.getFilmById(id);
+    }
+
+    public Film addFilm(Film film) {
+        return filmStorage.addFilm(film);
+    }
+
+    public Film updateFilm(Film film) {
+        return filmStorage.updateFilm(film);
+    }
+
     public Map<String, String> addLike(Long filmId, Long userId) {
         if (!userStorage.getUsers().contains(userStorage.getUserById(userId))) {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден");
