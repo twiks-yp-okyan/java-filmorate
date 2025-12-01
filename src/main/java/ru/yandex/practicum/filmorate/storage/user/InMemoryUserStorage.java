@@ -10,8 +10,9 @@ import ru.yandex.practicum.filmorate.utils.IdGenerator;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-@Component
+//@Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
@@ -54,5 +55,13 @@ public class InMemoryUserStorage implements UserStorage {
             return oldUser;
         }
         throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return Optional.empty();
+    }
+
+    public Optional<User> findByLogin(String login) {
+        return Optional.empty();
     }
 }

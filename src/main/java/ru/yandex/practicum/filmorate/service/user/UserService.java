@@ -1,17 +1,26 @@
 package ru.yandex.practicum.filmorate.service.user;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.UserDto;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.FriendshipException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
+    @Qualifier("dbImplementation")
     private final UserStorage userStorage;
+
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     public Collection<User> getUsers() {
         return userStorage.getUsers();
@@ -21,12 +30,34 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public User create(User user) {
-        return userStorage.createUser(user);
+    public UserDto create(NewUserRequest request) {
+        if (userStorage.findByEmail(request.getEmail()).isPresent()) {
+            throw new ConditionsNotMetException("Пользователь с таким email уже существует.");
+        }
+        if (userStorage.findByLogin(request.getLogin()).isPresent()) {
+            throw new ConditionsNotMetException("Пользователь с таким логином уже существует.");
+        }
+        User user = UserMapper.mapToUser(request);
+        user = userStorage.createUser(user);
+        return UserMapper.mapToUserDto(user);
     }
 
-    public User updateUser(User user) {
-        return userStorage.updateUser(user);
+    public UserDto updateUser(long id, UpdateUserRequest request) {
+        userStorage.findByEmail(request.getEmail())
+                .ifPresent(user -> {
+                    if (!user.getId().equals(id)) {
+                        throw new ConditionsNotMetException("Пользователь с таким email уже существует.");
+                    }
+                });
+        userStorage.findByLogin(request.getLogin())
+                .ifPresent(user -> {
+                    if (!user.getId().equals(id)) {
+                        throw new ConditionsNotMetException("Пользователь с таким логином уже существует.");
+                    }
+                });
+        User userForUpdate = userStorage.getUserById(id);
+        userForUpdate = userStorage.updateUser(UserMapper.updateUserData(userForUpdate, request));
+        return UserMapper.mapToUserDto(userForUpdate);
     }
 
     public Map<String, String> startFriendship(Long user1Id, Long user2Id) {
