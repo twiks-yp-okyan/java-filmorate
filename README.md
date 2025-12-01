@@ -1,4 +1,4 @@
 # java-filmorate
 Filmorate project.
 
-![DB-schema](db-schema.png)
+![DB-schema](./db-schema.png)
