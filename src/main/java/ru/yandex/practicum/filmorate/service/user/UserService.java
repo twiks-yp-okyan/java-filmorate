@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.FriendshipException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.friendship.FriendshipService;
@@ -32,7 +33,9 @@ public class UserService {
     }
 
     public UserDto getUserById(long id) {
-        return UserMapper.mapToUserDto(userStorage.getUserById(id));
+        return userStorage.getUserById(id)
+                .map(UserMapper::mapToUserDto)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id = %d не найден", id)));
     }
 
     public UserDto create(NewUserRequest request) {
@@ -47,21 +50,23 @@ public class UserService {
         return UserMapper.mapToUserDto(user);
     }
 
-    public UserDto updateUser(long id, UpdateUserRequest request) {
+    public UserDto updateUser(UpdateUserRequest request) {
         userStorage.findByEmail(request.getEmail())
                 .ifPresent(user -> {
-                    if (!user.getId().equals(id)) {
+                    if (!user.getId().equals(request.getId())) {
                         throw new ConditionsNotMetException("Пользователь с таким email уже существует.");
                     }
                 });
         userStorage.findByLogin(request.getLogin())
                 .ifPresent(user -> {
-                    if (!user.getId().equals(id)) {
+                    if (!user.getId().equals(request.getId())) {
                         throw new ConditionsNotMetException("Пользователь с таким логином уже существует.");
                     }
                 });
-        User userForUpdate = userStorage.getUserById(id);
-        userForUpdate = userStorage.updateUser(UserMapper.updateUserData(userForUpdate, request));
+        User userForUpdate = userStorage.getUserById(request.getId())
+                .map(user -> UserMapper.updateUserData(user, request))
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден."));
+        userForUpdate = userStorage.updateUser(userForUpdate);
         return UserMapper.mapToUserDto(userForUpdate);
     }
 
@@ -88,9 +93,7 @@ public class UserService {
 
     public List<UserDto> getMutualFriends(Long user1Id, Long user2Id) {
         if (user1Id.equals(user2Id)) {
-            throw new FriendshipException(
-                    userStorage.getUserById(user1Id).getId(),
-                    userStorage.getUserById(user2Id).getId(),
+            throw new FriendshipException(user1Id, user2Id,
                     "Одинаковые id пользователей для поиска общих друзей");
         }
 

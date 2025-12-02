@@ -15,10 +15,10 @@ import java.util.Optional;
 public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
     private final static String FIND_ALL_FILMS_QUERY = "SELECT * FROM FILMS";
     private final static String FIND_FILM_BY_ID = "SELECT * FROM FILMS WHERE id = ?";
-    private final static String INSERT_NEW_FILM_QUERY = "INSERT INTO films (name, description, release_date, duration) " +
-            "VALUES (?, ?, ?, ?)";
+    private final static String INSERT_NEW_FILM_QUERY = "INSERT INTO films (name, description, release_date, duration, rating_id) " +
+            "VALUES (?, ?, ?, ?, ?)";
     private final static String UPDATE_FILM_QUERY = "UPDATE films " +
-            "SET name = ?, description = ?, release_date = ?, duration = ? " +
+            "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? " +
             "WHERE id = ?";
     private final static String FIND_FILM_BY_NAME_AND_RELEASE_DATE_QUERY = "SELECT * FROM films " +
             "WHERE name = ? AND release_date = ?";
@@ -31,10 +31,8 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
         return findMany(FIND_ALL_FILMS_QUERY);
     }
 
-    public Film getFilmById(Long id) {
-        return findOne(FIND_FILM_BY_ID, id).orElseThrow(
-                () -> new NotFoundException(String.format("Фильм с id = %d не найден", id))
-        );
+    public Optional<Film> getFilmById(Long id) {
+        return findOne(FIND_FILM_BY_ID, id);
     }
 
     public Film addFilm(Film film) {
@@ -43,7 +41,8 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
                 film.getName(),
                 film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
-                film.getDuration()
+                film.getDuration(),
+                film.getMpa().getId()
         );
         film.setId(id);
         return film;
@@ -56,6 +55,7 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
+                film.getMpa().getId(),
                 film.getId()
         );
         return film;

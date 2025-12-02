@@ -21,9 +21,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
-    public Film getFilmById(Long id) {
+    public Optional<Film> getFilmById(Long id) {
         if (films.containsKey(id)) {
-            return films.get(id);
+            return Optional.of(films.get(id));
         }
         throw new NotFoundException(String.format("Фильм с id %d не найден.", id));
     }

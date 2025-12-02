@@ -34,9 +34,8 @@ public class UserStorageDb extends BaseRepository<User> implements UserStorage {
         return findMany(FIND_ALL_USERS_QUERY);
     }
 
-    public User getUserById(Long id) {
-        return findOne(FIND_USER_BY_ID, id)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id = %d не найден", id)));
+    public Optional<User> getUserById(Long id) {
+        return findOne(FIND_USER_BY_ID, id);
     }
 
     public Optional<User> findByEmail(String email) {

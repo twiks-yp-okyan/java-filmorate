@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS films (
     name varchar(100) not null,
     description varchar(200),
     release_date date,
-    duration int
+    duration int,
+    rating_id int
 );
 
 CREATE TABLE IF NOT EXISTS films_likes (
@@ -33,12 +34,6 @@ CREATE TABLE IF NOT EXISTS rating (
     id int not null,
     name rating_mpa_type,
     PRIMARY KEY (id)
-);
-
-CREATE TABLE IF NOT EXISTS films_ratings (
-    film_id BIGINT,
-    rating_id int,
-    PRIMARY KEY (film_id, rating_id)
 );
 
 CREATE TABLE IF NOT EXISTS genres (

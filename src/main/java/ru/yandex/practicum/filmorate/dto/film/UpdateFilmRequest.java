@@ -1,16 +1,18 @@
 package ru.yandex.practicum.filmorate.dto.film;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.dto.rating.RatingFilm;
 import ru.yandex.practicum.filmorate.validator.annotation.DateAfterSpecial;
 
 import java.time.LocalDate;
 
 @Data
 public class UpdateFilmRequest {
+    @NotNull
+    private Long id;
     private String name;
     @Size(max = 200)
     private String description;
@@ -18,6 +20,7 @@ public class UpdateFilmRequest {
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
+    private RatingFilm mpa;
 
     public Boolean hasName() {
         return !(name == null || name.isBlank());
@@ -33,5 +36,9 @@ public class UpdateFilmRequest {
 
     public Boolean hasDuration() {
         return duration != null;
+    }
+
+    public Boolean hasRatingMpaId() {
+        return mpa != null;
     }
 }
