@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service.user;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.friendship.FriendshipDto;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
@@ -9,17 +10,20 @@ import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.FriendshipException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.friendship.FriendshipService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 
 @Service
 public class UserService {
-    @Qualifier("dbImplementation")
+    @Qualifier("userStorageDb")
     private final UserStorage userStorage;
+    private final FriendshipService friendshipService;
 
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, FriendshipService friendshipService) {
         this.userStorage = userStorage;
+        this.friendshipService = friendshipService;
     }
 
     public Collection<User> getUsers() {
@@ -60,49 +64,47 @@ public class UserService {
         return UserMapper.mapToUserDto(userForUpdate);
     }
 
-    public Map<String, String> startFriendship(Long user1Id, Long user2Id) {
-        Set<Long> user1Friends = new HashSet<>(userStorage.getUserById(user1Id).getFriends());
-        Set<Long> user2Friends = new HashSet<>(userStorage.getUserById(user2Id).getFriends());
-        if (isAlreadyFriends(user1Friends, user2Id) || isAlreadyFriends(user2Friends, user1Id) || user1Id.equals(user2Id)) {
-            throw new FriendshipException(user1Id, user2Id);
-        }
-        user1Friends.add(user2Id);
-        userStorage.getUserById(user1Id).setFriends(user1Friends);
-        user2Friends.add(user1Id);
-        userStorage.getUserById(user2Id).setFriends(user2Friends);
-        return Map.of("result", String.format("Пользователи с id %d и %d добавили друг друга в друзья.", user1Id, user2Id));
+    public FriendshipDto startFriendship(Long userId, Long friendId) {
+        return friendshipService.addFriend(userId, friendId);
+    }
+
+    public FriendshipDto approveFriendship(long userId, long friendId) {
+        return friendshipService.approveFriend(userId, friendId);
     }
 
     public Map<String, String> endFriendship(Long user1Id, Long user2Id) {
-        Set<Long> user1Friends = new HashSet<>(userStorage.getUserById(user1Id).getFriends());
-        Set<Long> user2Friends = new HashSet<>(userStorage.getUserById(user2Id).getFriends());
-        if (!(isAlreadyFriends(user1Friends, user2Id) || isAlreadyFriends(user2Friends, user1Id)) || user1Id.equals(user2Id)) {
-            throw new FriendshipException(user1Id, user2Id);
-        }
-        user1Friends.remove(user2Id);
-        userStorage.getUserById(user1Id).setFriends(user1Friends);
-        user2Friends.remove(user1Id);
-        userStorage.getUserById(user2Id).setFriends(user2Friends);
+//        Set<Long> user1Friends = new HashSet<>(userStorage.getUserById(user1Id).getFriends());
+//        Set<Long> user2Friends = new HashSet<>(userStorage.getUserById(user2Id).getFriends());
+//        if (!(isAlreadyFriends(user1Friends, user2Id) || isAlreadyFriends(user2Friends, user1Id)) || user1Id.equals(user2Id)) {
+//            throw new FriendshipException(user1Id, user2Id);
+//        }
+//        user1Friends.remove(user2Id);
+//        userStorage.getUserById(user1Id).setFriends(user1Friends);
+//        user2Friends.remove(user1Id);
+//        userStorage.getUserById(user2Id).setFriends(user2Friends);
         return Map.of("result", String.format("Пользователи с id %d и %d удалили друг друга из друзей.", user1Id, user2Id));
     }
 
     public List<User> getMutualFriends(Long user1Id, Long user2Id) {
-        final Set<Long> user1Friends = new HashSet<>(userStorage.getUserById(user1Id).getFriends());
-        final Set<Long> user2Friends = new HashSet<>(userStorage.getUserById(user2Id).getFriends());
+        if (user1Id.equals(user2Id)) {
+            throw new FriendshipException(
+                    userStorage.getUserById(user1Id).getId(),
+                    userStorage.getUserById(user2Id).getId(),
+                    "Одинаковые id пользователей для поиска общих друзей");
+        }
 
-        return userStorage.getUsers().stream()
-                .filter(user -> user1Friends.contains(user.getId()) && user2Friends.contains(user.getId()))
+        Collection<User> user1Friends = userStorage.getUserFriends(user1Id);
+        Collection<User> user2Friends = userStorage.getUserFriends(user2Id);
+        return user1Friends.stream()
+                .filter(user2Friends::contains)
                 .toList();
     }
 
-    public List<User> getUserFriends(long userId) {
-        final User currentUser = userStorage.getUserById(userId);
-        return userStorage.getUsers().stream()
-                .filter(user -> currentUser.getFriends().contains(user.getId()))
-                .toList();
+    public Collection<User> getUserFriends(long userId) {
+        return userStorage.getUserFriends(userId);
     }
 
-    private boolean isAlreadyFriends(Set<Long> user1Friends, Long user2Id) {
-        return user1Friends.contains(user2Id);
-    }
+//    private boolean isAlreadyFriends(Set<Long> user1Friends, Long user2Id) {
+//        return user1Friends.contains(user2Id);
+//    }
 }

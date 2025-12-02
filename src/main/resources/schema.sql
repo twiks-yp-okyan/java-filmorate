@@ -29,12 +29,10 @@ CREATE TABLE IF NOT EXISTS films_likes (
 );
 
 CREATE TABLE IF NOT EXISTS friendship (
-    requestor_id BIGINT not null,
-    approver_id BIGINT not null,
+    user_id BIGINT not null,
+    friend_id BIGINT not null,
     status boolean not null,
-    request_dttm timestamp default current_timestamp,
-    approve_dttm timestamp,
-    PRIMARY KEY (requestor_id, approver_id)
+    PRIMARY KEY (user_id, friend_id)
 );
 
 CREATE TABLE IF NOT EXISTS films_genres (

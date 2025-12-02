@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dal.BaseRepository;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -11,7 +11,7 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Optional;
 
-@Repository("dbImplementation")
+@Repository("userStorageDb")
 public class UserStorageDb extends BaseRepository<User> implements UserStorage {
     private final static String FIND_ALL_USERS_QUERY = "SELECT * FROM USERS";
     private final static String FIND_USER_BY_ID = "SELECT * FROM USERS WHERE id = ?";
@@ -21,6 +21,9 @@ public class UserStorageDb extends BaseRepository<User> implements UserStorage {
             "VALUES (?, ?, ?, ?)";
     private final static String UPDATE_QUERY = "UPDATE users " +
             "SET email = ?, login = ?, name = ?, birthdate = ? WHERE id = ?";
+    private final static String FIND_USER_FRIENDS_QUERY = "SELECT u.* " +
+            "FROM friendship f JOIN users u ON f.friend_id = u.id " +
+            "WHERE f.user_id = ? and f.status = true";
 
 
     public UserStorageDb(JdbcTemplate jdbc, RowMapper<User> mapper) {
@@ -32,7 +35,8 @@ public class UserStorageDb extends BaseRepository<User> implements UserStorage {
     }
 
     public User getUserById(Long id) {
-        return findOne(FIND_USER_BY_ID, id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        return findOne(FIND_USER_BY_ID, id)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id = %d не найден", id)));
     }
 
     public Optional<User> findByEmail(String email) {
@@ -65,5 +69,9 @@ public class UserStorageDb extends BaseRepository<User> implements UserStorage {
                 user.getId()
         );
         return user;
+    }
+
+    public Collection<User> getUserFriends(long userId) {
+        return findMany(FIND_USER_FRIENDS_QUERY, userId);
     }
 }

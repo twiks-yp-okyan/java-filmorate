@@ -7,10 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.IdGenerator;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 //@Component
 @Slf4j
@@ -63,5 +60,9 @@ public class InMemoryUserStorage implements UserStorage {
 
     public Optional<User> findByLogin(String login) {
         return Optional.empty();
+    }
+
+    public List<User> getUserFriends(long userId) {
+        return null;
     }
 }

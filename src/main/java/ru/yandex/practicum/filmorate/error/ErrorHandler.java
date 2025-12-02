@@ -37,7 +37,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.OK) // WTF?
     public ErrorInfo handleFriendship(final FriendshipException e) {
-        return new ErrorInfo(String.format("Пользователи с id %d и %d и так друзья/не друзья/один пользователь.", e.getUser1Id(), e.getUser2Id()));
+        return new ErrorInfo(e.getMessage());
     }
 
     @ExceptionHandler

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.friendship.FriendshipDto;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
@@ -43,16 +44,24 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getUserFriends(@PathVariable Long id) {
+    public Collection<User> getUserFriends(@PathVariable Long id) {
         return userService.getUserFriends(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public Map<String, String> startFriendship(
+    public FriendshipDto startFriendship(
             @PathVariable long id,
             @PathVariable long friendId
     ) {
         return userService.startFriendship(id, friendId);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}/approve")
+    public FriendshipDto approveFriendship(
+            @PathVariable long id,
+            @PathVariable long friendId
+    ) {
+        return userService.approveFriendship(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")

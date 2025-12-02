@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dal;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -58,6 +58,13 @@ public class BaseRepository<T> {
         if (id != null) {
             return id;
         } else {
+            throw new InternalServerException("Не удалось сохранить данные");
+        }
+    }
+
+    protected void insert_without_return(String query, Object... params) {
+        int rowsInserted = jdbc.update(query, params);
+        if (rowsInserted == 0) {
             throw new InternalServerException("Не удалось сохранить данные");
         }
     }
