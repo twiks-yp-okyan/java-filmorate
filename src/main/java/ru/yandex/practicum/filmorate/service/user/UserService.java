@@ -17,21 +17,22 @@ import java.util.*;
 
 @Service
 public class UserService {
-    @Qualifier("userStorageDb")
     private final UserStorage userStorage;
     private final FriendshipService friendshipService;
 
-    public UserService(UserStorage userStorage, FriendshipService friendshipService) {
+    public UserService(@Qualifier("userStorageDb") UserStorage userStorage, FriendshipService friendshipService) {
         this.userStorage = userStorage;
         this.friendshipService = friendshipService;
     }
 
-    public Collection<User> getUsers() {
-        return userStorage.getUsers();
+    public Collection<UserDto> getUsers() {
+        return userStorage.getUsers().stream()
+                .map(UserMapper::mapToUserDto)
+                .toList();
     }
 
-    public User getUserById(long id) {
-        return userStorage.getUserById(id);
+    public UserDto getUserById(long id) {
+        return UserMapper.mapToUserDto(userStorage.getUserById(id));
     }
 
     public UserDto create(NewUserRequest request) {
@@ -85,7 +86,7 @@ public class UserService {
         return Map.of("result", String.format("Пользователи с id %d и %d удалили друг друга из друзей.", user1Id, user2Id));
     }
 
-    public List<User> getMutualFriends(Long user1Id, Long user2Id) {
+    public List<UserDto> getMutualFriends(Long user1Id, Long user2Id) {
         if (user1Id.equals(user2Id)) {
             throw new FriendshipException(
                     userStorage.getUserById(user1Id).getId(),
@@ -97,11 +98,14 @@ public class UserService {
         Collection<User> user2Friends = userStorage.getUserFriends(user2Id);
         return user1Friends.stream()
                 .filter(user2Friends::contains)
+                .map(UserMapper::mapToUserDto)
                 .toList();
     }
 
-    public Collection<User> getUserFriends(long userId) {
-        return userStorage.getUserFriends(userId);
+    public Collection<UserDto> getUserFriends(long userId) {
+        return userStorage.getUserFriends(userId).stream()
+                .map(UserMapper::mapToUserDto)
+                .toList();
     }
 
 //    private boolean isAlreadyFriends(Set<Long> user1Friends, Long user2Id) {

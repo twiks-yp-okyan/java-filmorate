@@ -29,10 +29,18 @@ public final class UserMapper {
     }
 
     public static User updateUserData(User user, UpdateUserRequest request) {
-        user.setEmail(request.getEmail());
-        user.setLogin(request.getLogin());
-        user.setName(request.getName());
-        user.setBirthday(request.getBirthday());
+        if (request.hasEmail()) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.hasName()) {
+            user.setName(request.getName());
+        }
+        if (request.hasBirthday()) {
+            user.setBirthday(request.getBirthday());
+        }
+        if (request.hasLogin()) {
+            user.setLogin(request.getLogin());
+        }
         return user;
     }
 }

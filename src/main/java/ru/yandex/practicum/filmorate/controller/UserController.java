@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.dto.friendship.FriendshipDto;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import java.util.Collection;
@@ -24,12 +23,12 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public Collection<User> getUsers() {
+    public Collection<UserDto> getUsers() {
         return userService.getUsers();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable long id) {
+    public UserDto getUserById(@PathVariable long id) {
         return userService.getUserById(id);
     }
 
@@ -44,7 +43,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public Collection<User> getUserFriends(@PathVariable Long id) {
+    public Collection<UserDto> getUserFriends(@PathVariable Long id) {
         return userService.getUserFriends(id);
     }
 
@@ -73,7 +72,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getMutualFriends(
+    public List<UserDto> getMutualFriends(
             @PathVariable long id,
             @PathVariable long otherId
     ) {

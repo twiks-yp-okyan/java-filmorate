@@ -12,10 +12,25 @@ import java.time.LocalDate;
 public class UpdateUserRequest {
     @Email
     private String email;
-    @NotBlank
     @Pattern(regexp = "\\S+")
     private String login;
     private String name;
     @PastOrPresent
     private LocalDate birthday;
+
+    public Boolean hasEmail() {
+        return !(email == null || email.isBlank());
+    }
+
+    public Boolean hasLogin() {
+        return !(login == null || login.isBlank());
+    }
+
+    public Boolean hasName() {
+        return !(name == null || name.isBlank());
+    }
+
+    public Boolean hasBirthday() {
+        return birthday != null;
+    }
 }

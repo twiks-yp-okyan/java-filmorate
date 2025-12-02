@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.utils.IdGenerator;
 
 import java.util.*;
 
-//@Component
+@Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
