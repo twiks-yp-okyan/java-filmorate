@@ -18,8 +18,8 @@ public class FriendshipService {
             throw new FriendshipException(userId, friendId, "Нельзя отправить запрос на добавление в друзья самому себе");
         }
         if (friendshipStorage.getFriendshipStatus(userId, friendId).isPresent()) {
-            throw new FriendshipException(userId, friendId
-                    , "Запрос на дружбу уже отправлен от пользователя с id = %d пользователю с id = %d."
+            throw new FriendshipException(userId, friendId,
+                    "Запрос на дружбу уже отправлен от пользователя с id = %d пользователю с id = %d."
             );
         } else {
             friendshipStorage.addFriend(userId, friendId);
