@@ -8,4 +8,6 @@ public interface FilmGenreStorage {
     Collection<FilmGenre> findAllFilmGenresByFilmId(long filmId);
 
     void addFilmGenre(long filmId, int genreId);
+
+    void deleteFilmGenres(long filmId);
 }

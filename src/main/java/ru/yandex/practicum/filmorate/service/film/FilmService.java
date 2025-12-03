@@ -64,7 +64,7 @@ public class FilmService {
         film = filmStorage.addFilm(film);
         final Long filmId = film.getId();
         if (request.getGenres() != null) {
-            request.getGenres().forEach(genre -> genreService.saveFilmGenre(filmId, genre.getId()));
+            genreService.saveFilmGenres(filmId, request.getGenres());
         }
         return getFilmWithGenres(film);
     }
@@ -75,7 +75,9 @@ public class FilmService {
                 .orElseThrow(() -> new NotFoundException("Фильм не найден."));
 
         filmForUpdate = filmStorage.updateFilm(filmForUpdate);
-        updateFilmGenres(filmForUpdate, request);
+        if (request.getGenres() != null) {
+            genreService.saveFilmGenres(filmForUpdate.getId(), request.getGenres());
+        }
 
         return getFilmWithGenres(filmForUpdate);
     }
@@ -105,13 +107,5 @@ public class FilmService {
                 film,
                 ratingService.getRatingById(film.getRatingId()),
                 genreService.findAllFilmGenres(film.getId()));
-    }
-
-    private void updateFilmGenres(Film film, UpdateFilmRequest request) {
-        if (request.getGenres() != null) {
-            request.getGenres().stream()
-                    .filter(genre -> !genreService.findAllFilmGenres(film.getId()).contains(genre))
-                    .forEach(genre -> genreService.saveFilmGenre(film.getId(), genre.getId()));
-        }
     }
 }

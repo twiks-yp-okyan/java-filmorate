@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.friendship;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.mapper.FriendshipMapper;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import ru.yandex.practicum.filmorate.model.Friendship;
 
@@ -23,21 +22,19 @@ public class FriendshipStorageDb extends BaseRepository<Friendship> implements F
         super(jdbc, mapper);
     }
 
-    public Friendship addFriend(long userId, long friendId) {
+    public void addFriend(long userId, long friendId) {
         insert_without_return(INSERT_NEW_FRIEND_QUERY, userId, friendId);
-        return FriendshipMapper.mapToFriendshipRequest(userId, friendId);
     }
 
-    public Friendship approveFriend(long userId, long friendId) {
+    public void approveFriend(long userId, long friendId) {
         update(UPDATE_FRIENDSHIP_STATUS_QUERY, userId, friendId);
-        return FriendshipMapper.mapToFriendshipApprove(userId, friendId);
     }
 
     public Optional<Friendship> getFriendshipStatus(long userId, long friendId) {
         return findOne(CHECK_FRIENDSHIP_STATUS_QUERY, userId, friendId);
     }
 
-    public Boolean deleteFromFriends(long userId, long friendId) {
-        return delete(DELETE_FROM_FRIENDS_QUERY, userId, friendId);
+    public void deleteFromFriends(long userId, long friendId) {
+        delete(DELETE_FROM_FRIENDS_QUERY, userId, friendId);
     }
 }

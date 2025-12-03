@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FilmMapper {
@@ -23,18 +23,7 @@ public class FilmMapper {
         return film;
     }
 
-    public static Film mapToFilmUpd(UpdateFilmRequest request) {
-        Film film = new Film();
-        film.setId(request.getId());
-        film.setName(request.getName());
-        film.setDescription(request.getDescription());
-        film.setReleaseDate(request.getReleaseDate());
-        film.setDuration(request.getDuration());
-        film.setRatingId(request.getMpa().getId());
-        return film;
-    }
-
-    public static FilmDto mapToFilmDto(Film film, RatingDto rating, List<GenreDto> genres) {
+    public static FilmDto mapToFilmDto(Film film, RatingDto rating, Set<GenreDto> genres) {
         FilmDto dto = new FilmDto();
         dto.setId(film.getId());
         dto.setName(film.getName());
