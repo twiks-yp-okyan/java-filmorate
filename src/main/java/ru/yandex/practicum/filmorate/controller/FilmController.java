@@ -31,7 +31,7 @@ public class FilmController {
 
     @PostMapping
     public FilmDto addFilm(@Valid @RequestBody NewFilmRequest film) {
-        return filmService.addFilm(film);
+        return filmService.saveFilm(film);
     }
 
     @PutMapping

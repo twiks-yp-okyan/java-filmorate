@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
@@ -20,8 +19,6 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
     private final static String UPDATE_FILM_QUERY = "UPDATE films " +
             "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? " +
             "WHERE id = ?";
-    private final static String FIND_FILM_BY_NAME_AND_RELEASE_DATE_QUERY = "SELECT * FROM films " +
-            "WHERE name = ? AND release_date = ?";
 
     public FilmStorageDb(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -59,9 +56,5 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
                 film.getId()
         );
         return film;
-    }
-
-    public Optional<Film> findByNameAndReleaseDate(Film film) {
-        return findOne(FIND_FILM_BY_NAME_AND_RELEASE_DATE_QUERY, film.getName(), film.getReleaseDate());
     }
 }

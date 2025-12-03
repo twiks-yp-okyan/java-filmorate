@@ -13,6 +13,4 @@ public interface FilmStorage {
     Film addFilm(Film film);
 
     Film updateFilm(Film film);
-
-    Optional<Film> findByNameAndReleaseDate(Film film);
 }

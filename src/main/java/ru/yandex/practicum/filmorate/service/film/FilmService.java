@@ -5,17 +5,13 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
-import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.exception.FilmLikeException;
-import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.service.genre.GenreService;
 import ru.yandex.practicum.filmorate.service.rating.RatingService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 
@@ -23,42 +19,48 @@ import java.util.*;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final RatingService ratingService;
+    private final GenreService genreService;
 //    private final UserStorage userStorage;
 //    private final int topFilmCountConstantWithFuckingCheckstyleTermsNaming = 10;
 //    private final Comparator<Film> filmLikesComparator = Comparator.comparing((Film film) -> film.getUserIdsLikes().size());
 
     public FilmService(
             @Qualifier("filmStorageDb") FilmStorage filmStorage,
-            RatingService ratingService
+            RatingService ratingService,
+            GenreService genreService
     ) {
         this.filmStorage = filmStorage;
         this.ratingService = ratingService;
+        this.genreService = genreService;
     }
 
     public Collection<FilmDto> getFilms() {
         return filmStorage.getFilms().stream()
-                .map(FilmMapper::mapToFilmDto)
+                .map(this::getFilmWithGenres)
                 .toList();
     }
 
     public FilmDto getFilmById(long id) {
         return filmStorage.getFilmById(id)
-                .map(FilmMapper::mapToFilmDto)
+                .map(this::getFilmWithGenres)
                 .orElseThrow(() -> new NotFoundException(String.format("Фильм с id = %d не найден", id)));
     }
 
-    public FilmDto addFilm(NewFilmRequest request) {
-        Film film = FilmMapper.mapToFilm(request);
+    public FilmDto saveFilm(NewFilmRequest request) {
+        Film film = FilmMapper.mapToFilmSave(request);
 
         if (film.getMpa() != null) {
             ratingService.getRatingById(film.getMpa().getId());
         }
-        filmStorage.findByNameAndReleaseDate(film).ifPresent(
-                f -> {throw new ConditionsNotMetException("Фильм с таким названием и датой выхода уже существует.");}
-        );
+        if (filmStorage.getFilms().contains(FilmMapper.mapToFilmSave(request))) {
+            throw new ConditionsNotMetException("Фильм с таким названием и датой выхода уже существует.");
+        }
 
         film = filmStorage.addFilm(film);
-        return FilmMapper.mapToFilmDto(film);
+        final Long filmId = film.getId();
+        request.getGenres().forEach(genre -> genreService.saveFilmGenre(filmId, genre.getId()));
+
+        return getFilmWithGenres(film);
     }
 
     public FilmDto updateFilm(UpdateFilmRequest request) {
@@ -66,12 +68,14 @@ public class FilmService {
                 .map(film -> FilmMapper.updateFilmData(film, request))
                 .orElseThrow(() -> new NotFoundException("Фильм не найден."));
 
-        if (filmStorage.findByNameAndReleaseDate(filmForUpdate).isPresent()) {
+        if (filmStorage.getFilms().contains(FilmMapper.mapToFilmUpd(request))) {
             throw new ConditionsNotMetException("Фильм с таким названием и датой выхода уже существует.");
         }
 
         filmForUpdate = filmStorage.updateFilm(filmForUpdate);
-        return FilmMapper.mapToFilmDto(filmForUpdate);
+        updateFilmGenres(filmForUpdate, request);
+
+        return getFilmWithGenres(filmForUpdate);
     }
 
 //    public Map<String, String> addLike(Long filmId, Long userId) {
@@ -112,4 +116,13 @@ public class FilmService {
 //                .limit(count)
 //                .toList();
 //    }
+    private FilmDto getFilmWithGenres(Film film) {
+        return FilmMapper.mapToFilmDto(film, genreService.findAllFilmGenres(film.getId()));
+    }
+
+    private void updateFilmGenres(Film film, UpdateFilmRequest request) {
+        request.getGenres().stream()
+                .filter(genre -> !genreService.findAllFilmGenres(film.getId()).contains(genre))
+                .forEach(genre -> genreService.saveFilmGenre(film.getId(), genre.getId()));
+    }
 }
