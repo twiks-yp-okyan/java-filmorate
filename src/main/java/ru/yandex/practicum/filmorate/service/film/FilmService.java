@@ -51,6 +51,7 @@ public class FilmService {
                 .map(this::getFilmWithGenres)
                 .orElseThrow(() -> new NotFoundException(String.format("Фильм с id = %d не найден", id)));
     }
+
     // Странно, что не надо проверять наличие в БД с таким же названием + датой релиза..
     // Была такая проверка, убрал ее, все тесты прошли:D
     public FilmDto saveFilm(NewFilmRequest request) {
@@ -62,7 +63,7 @@ public class FilmService {
 
         film = filmStorage.addFilm(film);
         final Long filmId = film.getId();
-        if (request.getGenres() != null){
+        if (request.getGenres() != null) {
             request.getGenres().forEach(genre -> genreService.saveFilmGenre(filmId, genre.getId()));
         }
         return getFilmWithGenres(film);
