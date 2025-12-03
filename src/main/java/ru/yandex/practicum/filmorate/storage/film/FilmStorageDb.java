@@ -12,11 +12,11 @@ import java.util.Optional;
 
 @Repository("filmStorageDb")
 public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
-    private final static String FIND_ALL_FILMS_QUERY = "SELECT * FROM FILMS";
-    private final static String FIND_FILM_BY_ID = "SELECT * FROM FILMS WHERE id = ?";
-    private final static String INSERT_NEW_FILM_QUERY = "INSERT INTO films (name, description, release_date, duration, rating_id) " +
+    private static final String FIND_ALL_FILMS_QUERY = "SELECT * FROM FILMS";
+    private static final String FIND_FILM_BY_ID = "SELECT * FROM FILMS WHERE id = ?";
+    private static final String INSERT_NEW_FILM_QUERY = "INSERT INTO films (name, description, release_date, duration, rating_id) " +
             "VALUES (?, ?, ?, ?, ?)";
-    private final static String UPDATE_FILM_QUERY = "UPDATE films " +
+    private static final String UPDATE_FILM_QUERY = "UPDATE films " +
             "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? " +
             "WHERE id = ?";
     private static final String GET_TOP_FILMS_QUERY = "SELECT id, name, description, release_date, duration, rating_id " +

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public class GenreStorageDb extends BaseRepository<Genre> implements GenreStorage {
-    private final static String FIND_ALL_GENRES_QUERY = "SELECT * FROM genres";
+    private static final String FIND_ALL_GENRES_QUERY = "SELECT * FROM genres";
     private static final String FIND_GENRE_BY_ID = "SELECT * FROM genres WHERE id = ?";
     private static final String INSERT_NEW_GENRE_QUERY = "INSERT INTO genres (name) VALUES (?)";
     private static final String FIND_GENRE_BY_NAME = "SELECT * FROM genres WHERE name = ?";

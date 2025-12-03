@@ -11,13 +11,13 @@ import java.util.Optional;
 
 @Repository("friendshipStorageDb")
 public class FriendshipStorageDb extends BaseRepository<Friendship> implements FriendshipStorage {
-    private final static String INSERT_NEW_FRIEND_QUERY = "INSERT INTO friendship (user_id, friend_id, status) " +
+    private static final String INSERT_NEW_FRIEND_QUERY = "INSERT INTO friendship (user_id, friend_id, status) " +
             "VALUES (?, ?, false)";
-    private final static String UPDATE_FRIENDSHIP_STATUS_QUERY = "UPDATE friendship " +
+    private static final String UPDATE_FRIENDSHIP_STATUS_QUERY = "UPDATE friendship " +
             "SET status = true WHERE user_id = ? and friend_id = ?";
-    private final static String CHECK_FRIENDSHIP_STATUS_QUERY = "SELECT * FROM friendship WHERE " +
+    private static final String CHECK_FRIENDSHIP_STATUS_QUERY = "SELECT * FROM friendship WHERE " +
             "user_id = ? AND friend_id = ?";
-    private final static String DELETE_FROM_FRIENDS_QUERY = "DELETE FROM friendship WHERE user_id = ? and friend_id = ?";
+    private static final String DELETE_FROM_FRIENDS_QUERY = "DELETE FROM friendship WHERE user_id = ? and friend_id = ?";
 
     public FriendshipStorageDb(JdbcTemplate jdbc, RowMapper<Friendship> mapper) {
         super(jdbc, mapper);
