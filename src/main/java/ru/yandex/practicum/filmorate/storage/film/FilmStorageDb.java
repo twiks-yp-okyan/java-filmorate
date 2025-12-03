@@ -19,6 +19,11 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
     private final static String UPDATE_FILM_QUERY = "UPDATE films " +
             "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? " +
             "WHERE id = ?";
+    private static final String GET_TOP_FILMS_QUERY = "SELECT id, name, description, release_date, duration, rating_id " +
+            "FROM (" +
+            "SELECT f.*, COUNT(fl.film_id) as cnt FROM films f LEFT JOIN films_likes fl ON f.id = fl.film_id " +
+            "GROUP BY f.id, f.name, f.description, f.release_date, f.duration, f.rating_id " +
+            ") tmp ORDER BY cnt DESC LIMIT ?";
 
     public FilmStorageDb(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -56,5 +61,9 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
                 film.getId()
         );
         return film;
+    }
+
+    public Collection<Film> getTopFilms(int count) {
+        return findMany(GET_TOP_FILMS_QUERY, count);
     }
 }

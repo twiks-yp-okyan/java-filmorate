@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
+// тесты без дефиса не проходят...
 public enum RatingMpa {
     G("G"),
     PG("PG"),
-    PG13("PG13"),
+    PG13("PG-13"),
     R("R"),
-    NC17("NC17");
+    NC17("NC-17");
 
     public final String label;
 
@@ -17,9 +18,9 @@ public enum RatingMpa {
         return switch (value.toLowerCase()) {
             case "g" -> G;
             case "pg" -> PG;
-            case "pg13" -> PG13;
+            case "pg-13" -> PG13;
             case "r" -> R;
-            case "nc17" -> NC17;
+            case "nc-17" -> NC17;
             default -> null;
         };
     }

@@ -54,4 +54,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Optional<Film> findByNameAndReleaseDate(Film film) {
         return Optional.empty();
     }
+
+    public Collection<Film> getTopFilms(int count) {
+        return null;
+    }
 }

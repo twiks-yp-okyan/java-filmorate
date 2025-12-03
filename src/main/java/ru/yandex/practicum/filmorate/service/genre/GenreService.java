@@ -31,7 +31,7 @@ public class GenreService {
     }
 
     public void saveFilmGenre(long filmId, int genreId) {
-        filmGenreStorage.addFilmGenre(filmId, genreId);
+        filmGenreStorage.addFilmGenre(filmId, getGenreById(genreId).getId());
     }
 
     public List<GenreFilm> findAllFilmGenres(long filmId) {
