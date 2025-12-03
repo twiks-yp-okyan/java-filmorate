@@ -14,7 +14,7 @@ public enum RatingMpa {
         this.label = label;
     }
 
-    public static RatingMpa from (String value) {
+    public static RatingMpa from(String value) {
         return switch (value.toLowerCase()) {
             case "g" -> G;
             case "pg" -> PG;
