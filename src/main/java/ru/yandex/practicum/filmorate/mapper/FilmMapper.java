@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Set;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FilmMapper {
@@ -23,7 +23,7 @@ public class FilmMapper {
         return film;
     }
 
-    public static FilmDto mapToFilmDto(Film film, RatingDto rating, Set<GenreDto> genres) {
+    public static FilmDto mapToFilmDto(Film film, RatingDto rating, List<GenreDto> genres) {
         FilmDto dto = new FilmDto();
         dto.setId(film.getId());
         dto.setName(film.getName());

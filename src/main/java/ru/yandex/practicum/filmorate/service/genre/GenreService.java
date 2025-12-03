@@ -9,9 +9,7 @@ import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,10 +36,11 @@ public class GenreService {
         uniqueGenreRequest.forEach(genre -> saveFilmGenre(filmId, genre.getId()));
     }
 
-    public Set<GenreDto> findAllFilmGenres(long filmId) {
+    public List<GenreDto> findAllFilmGenres(long filmId) {
         return genreStorage.findAllFilmGenresByFilmId(filmId).stream()
                 .map(GenreMapper::mapToGenreDto)
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparingInt(GenreDto::getId))
+                .toList();
     }
 
     private void deleteFilmGenres(long filmId) {

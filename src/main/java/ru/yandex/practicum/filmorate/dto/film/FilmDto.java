@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class FilmDto {
@@ -17,5 +17,5 @@ public class FilmDto {
     private LocalDate releaseDate;
     private Integer duration;
     private RatingDto mpa;
-    private Set<GenreDto> genres;
+    private List<GenreDto> genres;
 }
