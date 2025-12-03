@@ -3,6 +3,6 @@ package ru.yandex.practicum.filmorate.dto.rating;
 import lombok.Data;
 
 @Data
-public class RatingFilm {
+public class RatingRequest {
     private Integer id;
 }

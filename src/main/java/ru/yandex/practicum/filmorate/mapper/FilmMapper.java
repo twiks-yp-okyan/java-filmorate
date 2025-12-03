@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
-import ru.yandex.practicum.filmorate.dto.genre.GenreFilm;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class FilmMapper {
         film.setDescription(request.getDescription());
         film.setReleaseDate(request.getReleaseDate());
         film.setDuration(request.getDuration());
-        film.setMpa(request.getMpa());
+        film.setRatingId(request.getMpa().getId());
         return film;
     }
 
@@ -29,18 +30,18 @@ public class FilmMapper {
         film.setDescription(request.getDescription());
         film.setReleaseDate(request.getReleaseDate());
         film.setDuration(request.getDuration());
-        film.setMpa(request.getMpa());
+        film.setRatingId(request.getMpa().getId());
         return film;
     }
 
-    public static FilmDto mapToFilmDto(Film film, List<GenreFilm> genres) {
+    public static FilmDto mapToFilmDto(Film film, RatingDto rating, List<GenreDto> genres) {
         FilmDto dto = new FilmDto();
         dto.setId(film.getId());
         dto.setName(film.getName());
         dto.setDescription(film.getDescription());
         dto.setReleaseDate(film.getReleaseDate());
         dto.setDuration(film.getDuration());
-        dto.setMpa(film.getMpa());
+        dto.setMpa(rating);
         dto.setGenres(genres);
         return dto;
     }
@@ -59,7 +60,7 @@ public class FilmMapper {
             film.setDuration(request.getDuration());
         }
         if (request.hasRatingMpaId()) {
-            film.setMpa(request.getMpa());
+            film.setRatingId(request.getMpa().getId());
         }
         return film;
     }

@@ -56,14 +56,15 @@ public class FilmService {
     public FilmDto saveFilm(NewFilmRequest request) {
         Film film = FilmMapper.mapToFilmSave(request);
 
-        if (film.getMpa() != null) {
-            ratingService.getRatingById(film.getMpa().getId());
+        if (film.getRatingId() != null) {
+            ratingService.getRatingById(film.getRatingId());
         }
 
         film = filmStorage.addFilm(film);
         final Long filmId = film.getId();
-        request.getGenres().forEach(genre -> genreService.saveFilmGenre(filmId, genre.getId()));
-
+        if (request.getGenres() != null){
+            request.getGenres().forEach(genre -> genreService.saveFilmGenre(filmId, genre.getId()));
+        }
         return getFilmWithGenres(film);
     }
 
@@ -99,7 +100,10 @@ public class FilmService {
     }
 
     private FilmDto getFilmWithGenres(Film film) {
-        return FilmMapper.mapToFilmDto(film, genreService.findAllFilmGenres(film.getId()));
+        return FilmMapper.mapToFilmDto(
+                film,
+                ratingService.getRatingById(film.getRatingId()),
+                genreService.findAllFilmGenres(film.getId()));
     }
 
     private void updateFilmGenres(Film film, UpdateFilmRequest request) {

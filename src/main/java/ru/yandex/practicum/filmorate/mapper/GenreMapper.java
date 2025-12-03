@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
-import ru.yandex.practicum.filmorate.dto.genre.GenreFilm;
+import ru.yandex.practicum.filmorate.dto.genre.GenreRequest;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -16,8 +16,8 @@ public class GenreMapper {
         return dto;
     }
 
-    public static GenreFilm mapToGenreFilm(FilmGenre filmGenre) {
-        GenreFilm genreFilm = new GenreFilm();
+    public static GenreRequest mapToGenreFilm(FilmGenre filmGenre) {
+        GenreRequest genreFilm = new GenreRequest();
         genreFilm.setId(filmGenre.getGenreId());
         return genreFilm;
     }

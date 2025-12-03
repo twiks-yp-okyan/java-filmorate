@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.dto.genre.GenreFilm;
-import ru.yandex.practicum.filmorate.dto.rating.RatingFilm;
+import ru.yandex.practicum.filmorate.dto.genre.GenreRequest;
+import ru.yandex.practicum.filmorate.dto.rating.RatingRequest;
 import ru.yandex.practicum.filmorate.validator.annotation.DateAfterSpecial;
 
 import java.time.LocalDate;
@@ -23,6 +23,6 @@ public class NewFilmRequest {
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
-    private RatingFilm mpa;
-    private List<GenreFilm> genres;
+    private RatingRequest mpa;
+    private List<GenreRequest> genres;
 }

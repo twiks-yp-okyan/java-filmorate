@@ -44,7 +44,7 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
                 film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
                 film.getDuration(),
-                film.getMpa().getId()
+                film.getRatingId()
         );
         film.setId(id);
         return film;
@@ -57,7 +57,7 @@ public class FilmStorageDb extends BaseRepository<Film> implements FilmStorage {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
-                film.getMpa().getId(),
+                film.getRatingId(),
                 film.getId()
         );
         return film;

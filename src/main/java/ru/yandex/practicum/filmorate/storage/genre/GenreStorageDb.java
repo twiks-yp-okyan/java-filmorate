@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.genre;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
@@ -15,6 +16,9 @@ public class GenreStorageDb extends BaseRepository<Genre> implements GenreStorag
     private static final String FIND_GENRE_BY_ID = "SELECT * FROM genres WHERE id = ?";
     private static final String INSERT_NEW_GENRE_QUERY = "INSERT INTO genres (name) VALUES (?)";
     private static final String FIND_GENRE_BY_NAME = "SELECT * FROM genres WHERE name = ?";
+    private static final String FIND_ALL_FILM_GENRES_BY_FILM_ID = "SELECT * FROM " +
+            "films_genres fg JOIN genres g ON fg.genre_id = g.id WHERE film_id = ?";
+
 
     public GenreStorageDb(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
         super(jdbc, mapper);
@@ -34,5 +38,9 @@ public class GenreStorageDb extends BaseRepository<Genre> implements GenreStorag
 
     public void addGenre(String name) {
         insert_without_return(INSERT_NEW_GENRE_QUERY, name);
+    }
+
+    public Collection<Genre> findAllFilmGenresByFilmId(long filmId) {
+        return findMany(FIND_ALL_FILM_GENRES_BY_FILM_ID, filmId);
     }
 }

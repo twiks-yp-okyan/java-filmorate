@@ -15,4 +15,5 @@ public interface GenreStorage {
 
     Optional<Genre> getGenreByName(String name);
 
+    Collection<Genre> findAllFilmGenresByFilmId(long filmId);
 }

@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.mapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.rating.RatingDto;
-import ru.yandex.practicum.filmorate.dto.rating.RatingFilm;
+import ru.yandex.practicum.filmorate.dto.rating.RatingRequest;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -15,9 +15,9 @@ public class RatingMapper {
         return dto;
     }
 
-    public static RatingFilm mapToRatingFilm(Integer id) {
-        RatingFilm ratingFilm = new RatingFilm();
-        ratingFilm.setId(id);
-        return ratingFilm;
+    public static Rating mapToRating(RatingRequest request) {
+        Rating rating = new Rating();
+        rating.setId(request.getId());
+        return rating;
     }
 }
