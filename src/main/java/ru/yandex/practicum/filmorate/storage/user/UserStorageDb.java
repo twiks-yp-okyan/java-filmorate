@@ -23,7 +23,7 @@ public class UserStorageDb extends BaseRepository<User> implements UserStorage {
             "SET email = ?, login = ?, name = ?, birthdate = ? WHERE id = ?";
     private final static String FIND_USER_FRIENDS_QUERY = "SELECT u.* " +
             "FROM friendship f JOIN users u ON f.friend_id = u.id " +
-            "WHERE f.user_id = ? and f.status = true";
+            "WHERE f.user_id = ?";
 
 
     public UserStorageDb(JdbcTemplate jdbc, RowMapper<User> mapper) {

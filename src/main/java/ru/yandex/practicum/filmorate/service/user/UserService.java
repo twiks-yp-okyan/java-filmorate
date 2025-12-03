@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service.user;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.friendship.FriendshipDto;
 import ru.yandex.practicum.filmorate.dto.user.NewUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
@@ -70,25 +69,25 @@ public class UserService {
         return UserMapper.mapToUserDto(userForUpdate);
     }
 
-    public FriendshipDto startFriendship(Long userId, Long friendId) {
-        return friendshipService.addFriend(userId, friendId);
+    public void startFriendship(Long userId, Long friendId) {
+        // для проверки наличия таких пользователей
+        userId = getUserById(userId).getId();
+        friendId = getUserById(friendId).getId();
+        friendshipService.addFriend(userId, friendId);
     }
 
-    public FriendshipDto approveFriendship(long userId, long friendId) {
-        return friendshipService.approveFriend(userId, friendId);
+    public void approveFriendship(long userId, long friendId) {
+        // для проверки наличия таких пользователей
+        userId = getUserById(userId).getId();
+        friendId = getUserById(friendId).getId();
+        friendshipService.approveFriend(userId, friendId);
     }
 
-    public Map<String, String> endFriendship(Long user1Id, Long user2Id) {
-//        Set<Long> user1Friends = new HashSet<>(userStorage.getUserById(user1Id).getFriends());
-//        Set<Long> user2Friends = new HashSet<>(userStorage.getUserById(user2Id).getFriends());
-//        if (!(isAlreadyFriends(user1Friends, user2Id) || isAlreadyFriends(user2Friends, user1Id)) || user1Id.equals(user2Id)) {
-//            throw new FriendshipException(user1Id, user2Id);
-//        }
-//        user1Friends.remove(user2Id);
-//        userStorage.getUserById(user1Id).setFriends(user1Friends);
-//        user2Friends.remove(user1Id);
-//        userStorage.getUserById(user2Id).setFriends(user2Friends);
-        return Map.of("result", String.format("Пользователи с id %d и %d удалили друг друга из друзей.", user1Id, user2Id));
+    public void endFriendship(Long userId, Long friendId) {
+        // для проверки наличия таких пользователей
+        userId = getUserById(userId).getId();
+        friendId = getUserById(friendId).getId();
+        friendshipService.deleteFromFriends(userId, friendId);
     }
 
     public List<UserDto> getMutualFriends(Long user1Id, Long user2Id) {
@@ -106,7 +105,8 @@ public class UserService {
     }
 
     public Collection<UserDto> getUserFriends(long userId) {
-        return userStorage.getUserFriends(userId).stream()
+        UserDto user = getUserById(userId);
+        return userStorage.getUserFriends(user.getId()).stream()
                 .map(UserMapper::mapToUserDto)
                 .toList();
     }

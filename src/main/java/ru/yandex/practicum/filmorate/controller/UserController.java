@@ -48,27 +48,27 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public FriendshipDto startFriendship(
+    public void startFriendship(
             @PathVariable long id,
             @PathVariable long friendId
     ) {
-        return userService.startFriendship(id, friendId);
+        userService.startFriendship(id, friendId);
     }
 
     @PutMapping("/{id}/friends/{friendId}/approve")
-    public FriendshipDto approveFriendship(
+    public void approveFriendship(
             @PathVariable long id,
             @PathVariable long friendId
     ) {
-        return userService.approveFriendship(id, friendId);
+        userService.approveFriendship(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public Map<String, String> endFriendship(
+    public void endFriendship(
             @PathVariable long id,
             @PathVariable long friendId
     ) {
-        return userService.endFriendship(id, friendId);
+        userService.endFriendship(id, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

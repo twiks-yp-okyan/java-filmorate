@@ -1,64 +1,52 @@
 package ru.yandex.practicum.filmorate.service.friendship;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.friendship.FriendshipDto;
 import ru.yandex.practicum.filmorate.exception.FriendshipException;
-import ru.yandex.practicum.filmorate.mapper.FriendshipMapper;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class FriendshipService {
-    @Qualifier("friendshipStorageDb")
     private final FriendshipStorage friendshipStorage;
 
-    public FriendshipService(FriendshipStorage friendshipStorage) {
-        this.friendshipStorage = friendshipStorage;
-    }
-
-    public FriendshipDto addFriend(long userId, long friendId) {
-        Friendship friendship = FriendshipMapper.mapToFriendship(userId, friendId);
-
-        if (friendship.getUserId().equals(friendship.getFriendId())) {
-            throw new FriendshipException(
-                    friendship.getUserId(),
-                    friendship.getFriendId(),
-                    "Нельзя отправить запрос на добавление в друзья самому себе");
+    public void addFriend(long userId, long friendId) {
+        if (userId == friendId) {
+            throw new FriendshipException(userId, friendId, "Нельзя отправить запрос на добавление в друзья самому себе");
         }
-        if (friendshipStorage.getFriendshipStatus(friendship).isPresent()) {
-            throw new FriendshipException(friendship.getUserId(), friendship.getFriendId()
+        if (friendshipStorage.getFriendshipStatus(userId, friendId).isPresent()) {
+            throw new FriendshipException(userId, friendId
                     , "Запрос на дружбу уже отправлен от пользователя с id = %d пользователю с id = %d."
             );
         } else {
-            friendship = friendshipStorage.addFriend(friendship);
+            friendshipStorage.addFriend(userId, friendId);
         }
-        return FriendshipMapper.mapToFriendshipDto(friendship);
     }
 
-    public FriendshipDto approveFriend(long userId, long friendId) {
-        Friendship friendship = FriendshipMapper.mapToFriendship(friendId, userId);
-
-        if (friendship.getUserId().equals(friendship.getFriendId())) {
-            throw new FriendshipException(
-                    friendship.getUserId(),
-                    friendship.getFriendId(),
-                    "Нельзя добавить в друзья самого себя");
+    public void approveFriend(long userId, long friendId) {
+        if (userId == friendId) {
+            throw new FriendshipException(userId, friendId, "Нельзя добавить в друзья самого себя");
         }
-        Optional<Friendship> friendshipData = friendshipStorage.getFriendshipStatus(friendship);
+        Optional<Friendship> friendshipData = friendshipStorage.getFriendshipStatus(friendId, userId);
         if (friendshipData.isPresent()) {
             if (friendshipData.get().getStatus()) {
                 throw new FriendshipException(friendshipData.get().getFriendId(), friendshipData.get().getUserId(),
                         "Пользователь с id = %d уже в списке друзей пользователя с id = %d");
             } else {
-                friendship = friendshipStorage.approveFriend(friendship);
+                friendshipStorage.approveFriend(friendId, userId);
+
             }
         } else {
-            throw new FriendshipException(friendship.getUserId(), friendship.getFriendId(),
+            throw new FriendshipException(userId, friendId,
                     "Пользователь с id = %d не отправлял запроса на дружбу пользователю с id = %d");
         }
-        return FriendshipMapper.mapToFriendshipDto(friendship);
+    }
+
+    public void deleteFromFriends(long userId, long friendId) {
+        friendshipStorage.deleteFromFriends(userId, friendId);
     }
 }
