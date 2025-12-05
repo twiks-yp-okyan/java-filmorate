@@ -7,9 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.IdGenerator;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -20,9 +18,9 @@ public class InMemoryUserStorage implements UserStorage {
         return users.values();
     }
 
-    public User getUserById(Long id) {
+    public Optional<User> getUserById(Long id) {
         if (users.containsKey(id)) {
-            return users.get(id);
+            return Optional.of(users.get(id));
         }
         throw new NotFoundException("Пользователь с id = " + id + " не найден");
     }
@@ -54,5 +52,17 @@ public class InMemoryUserStorage implements UserStorage {
             return oldUser;
         }
         throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return Optional.empty();
+    }
+
+    public Optional<User> findByLogin(String login) {
+        return Optional.empty();
+    }
+
+    public List<User> getUserFriends(long userId) {
+        return null;
     }
 }

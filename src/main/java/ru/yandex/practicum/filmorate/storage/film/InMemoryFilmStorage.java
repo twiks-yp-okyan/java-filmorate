@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.utils.IdGenerator;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -20,9 +21,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
-    public Film getFilmById(Long id) {
+    public Optional<Film> getFilmById(Long id) {
         if (films.containsKey(id)) {
-            return films.get(id);
+            return Optional.of(films.get(id));
         }
         throw new NotFoundException(String.format("Фильм с id %d не найден.", id));
     }
@@ -48,5 +49,13 @@ public class InMemoryFilmStorage implements FilmStorage {
             return oldFilm;
         }
         throw new NotFoundException("Фильм с id = " + film.getId() + " не найден");
+    }
+
+    public Optional<Film> findByNameAndReleaseDate(Film film) {
+        return Optional.empty();
+    }
+
+    public Collection<Film> getTopFilms(int count) {
+        return null;
     }
 }

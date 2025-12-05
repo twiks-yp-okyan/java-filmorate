@@ -1,76 +1,111 @@
 package ru.yandex.practicum.filmorate.service.film;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmLikeException;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
+import ru.yandex.practicum.filmorate.dto.film.NewFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.genre.GenreService;
+import ru.yandex.practicum.filmorate.service.rating.RatingService;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final RatingService ratingService;
+    private final GenreService genreService;
+    private final FilmLikeService filmLikeService;
+    private final UserService userService;
     private final int topFilmCountConstantWithFuckingCheckstyleTermsNaming = 10;
-    private final Comparator<Film> filmLikesComparator = Comparator.comparing((Film film) -> film.getUserIdsLikes().size());
 
-    public Collection<Film> getFilms() {
-        return filmStorage.getFilms();
+    // Конструктор только ради Qualifier
+    public FilmService(
+            @Qualifier("filmStorageDb") FilmStorage filmStorage,
+            RatingService ratingService,
+            GenreService genreService,
+            FilmLikeService filmLikeService,
+            UserService userService
+    ) {
+        this.filmStorage = filmStorage;
+        this.ratingService = ratingService;
+        this.genreService = genreService;
+        this.filmLikeService = filmLikeService;
+        this.userService = userService;
     }
 
-    public Film getFilmById(long id) {
-        return filmStorage.getFilmById(id);
+    public Collection<FilmDto> getFilms() {
+        return filmStorage.getFilms().stream()
+                .map(this::getFilmWithGenres)
+                .toList();
     }
 
-    public Film addFilm(Film film) {
-        return filmStorage.addFilm(film);
+    public FilmDto getFilmById(long id) {
+        return filmStorage.getFilmById(id)
+                .map(this::getFilmWithGenres)
+                .orElseThrow(() -> new NotFoundException(String.format("Фильм с id = %d не найден", id)));
     }
 
-    public Film updateFilm(Film film) {
-        return filmStorage.updateFilm(film);
-    }
+    // Странно, что не надо проверять наличие в БД с таким же названием + датой релиза..
+    // Была такая проверка, убрал ее, все тесты прошли:D
+    public FilmDto saveFilm(NewFilmRequest request) {
+        Film film = FilmMapper.mapToFilmSave(request);
 
-    public Map<String, String> addLike(Long filmId, Long userId) {
-        if (!userStorage.getUsers().contains(userStorage.getUserById(userId))) {
-            throw new NotFoundException("Пользователь с id = " + userId + " не найден");
+        if (film.getRatingId() != null) {
+            ratingService.getRatingById(film.getRatingId());
         }
-        Set<Long> filmLikes = new HashSet<>(filmStorage.getFilmById(filmId).getUserIdsLikes());
-        if (filmLikes.contains(userId)) {
-            throw new FilmLikeException(filmId, userId);
+
+        film = filmStorage.addFilm(film);
+        final Long filmId = film.getId();
+        if (request.getGenres() != null) {
+            genreService.saveFilmGenres(filmId, request.getGenres());
         }
-        filmLikes.add(userId);
-        filmStorage.getFilmById(filmId).setUserIdsLikes(filmLikes);
-        return Map.of("result", String.format("Пользователь с id %d поставил лайк фильму с id %d", userId, filmId));
+        return getFilmWithGenres(film);
     }
 
-    public Map<String, String> removeLike(Long filmId, Long userId) {
-        if (!userStorage.getUsers().contains(userStorage.getUserById(userId))) {
-            throw new NotFoundException("Пользователь с id = " + userId + " не найден");
+    public FilmDto updateFilm(UpdateFilmRequest request) {
+        Film filmForUpdate = filmStorage.getFilmById(request.getId())
+                .map(film -> FilmMapper.updateFilmData(film, request))
+                .orElseThrow(() -> new NotFoundException("Фильм не найден."));
+
+        filmForUpdate = filmStorage.updateFilm(filmForUpdate);
+        if (request.getGenres() != null) {
+            genreService.saveFilmGenres(filmForUpdate.getId(), request.getGenres());
         }
-        Set<Long> filmLikes = new HashSet<>(filmStorage.getFilmById(filmId).getUserIdsLikes());
-        if (!filmLikes.contains(userId)) {
-            throw new FilmLikeException(filmId, userId);
-        }
-        filmLikes.remove(userId);
-        filmStorage.getFilmById(filmId).setUserIdsLikes(filmLikes);
-        return Map.of("result", String.format("Пользователь с id %d убрал лайк с фильма с id %d", userId, filmId));
+
+        return getFilmWithGenres(filmForUpdate);
     }
 
-    public List<Film> getTopFilms(Integer count) {
+    public void addLike(Long filmId, Long userId) {
+        filmLikeService.addLike(getFilmById(filmId).getId(), userService.getUserById(userId).getId());
+    }
+
+    public void removeLike(Long filmId, Long userId) {
+        filmLikeService.removeLike(getFilmById(filmId).getId(), userService.getUserById(userId).getId());
+    }
+
+    public List<FilmDto> getTopFilms(Integer count) {
         if (count == null) {
             count = topFilmCountConstantWithFuckingCheckstyleTermsNaming;
         }
         if (count <= 0) {
             throw new IncorrectParameterException("count", count.toString());
         }
-        return filmStorage.getFilms().stream()
-                .sorted(filmLikesComparator.reversed())
-                .limit(count)
+        return filmStorage.getTopFilms(count).stream()
+                .map(this::getFilmWithGenres)
                 .toList();
+    }
+
+    private FilmDto getFilmWithGenres(Film film) {
+        return FilmMapper.mapToFilmDto(
+                film,
+                ratingService.getRatingById(film.getRatingId()),
+                genreService.findAllFilmGenres(film.getId()));
     }
 }
